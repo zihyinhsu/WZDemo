@@ -12,8 +12,8 @@ using WZDemo.API.Data;
 namespace WZDemo.API.Migrations
 {
     [DbContext(typeof(WZDemoDBContext))]
-    [Migration("20241206055529_Initial Migration")]
-    partial class InitialMigration
+    [Migration("20241211031412_Adding Images Table")]
+    partial class AddingImagesTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,35 @@ namespace WZDemo.API.Migrations
                             Id = new Guid("e7996ade-e2c3-48ee-8c70-964d50dc8726"),
                             Name = "Hard"
                         });
+                });
+
+            modelBuilder.Entity("WZDemo.API.Models.Domain.Image", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FileDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileExtension")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("FileSizeInBytes")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("WZDemo.API.Models.Domain.Region", b =>

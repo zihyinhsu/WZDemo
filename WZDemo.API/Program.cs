@@ -10,12 +10,17 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+// 用於訪問當前的 HttpContext。HttpContext 包含有關當前 HTTP 請求的所有信息，例如請求頭、請求路徑、用戶信息等。
+builder.Services.AddHttpContextAccessor();
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -64,6 +69,7 @@ Options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnectionSt
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
 builder.Services.AddScoped<IWalkRepository, SQLWalkRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IImageRepository, LocalImageRepository>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
@@ -115,6 +121,11 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// 讀取靜態文件
+app.UseStaticFiles(new StaticFileOptions { 
+	FileProvider= new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(),"Images")),
+	RequestPath = "/Images"
+});
 app.MapControllers();
 
 app.Run();

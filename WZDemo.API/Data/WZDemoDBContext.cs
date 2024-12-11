@@ -16,6 +16,7 @@ namespace WZDemo.API.Data
 		public DbSet<Difficulty> Difficulties { get; set; }
 		public DbSet<Region> Regions { get; set; }
 		public DbSet<Walk> Walks { get; set; }
+		public DbSet<Image> Images { get; set; }
 
 		// 可在 Entity Framework Core (EF Core) 構建模型時進行自定義配置。
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

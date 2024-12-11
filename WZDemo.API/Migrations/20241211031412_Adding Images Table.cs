@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WZDemo.API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class AddingImagesTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,6 +23,22 @@ namespace WZDemo.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Difficulties", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Images",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FileExtension = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileSizeInBytes = table.Column<long>(type: "bigint", nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Images", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -55,7 +71,7 @@ namespace WZDemo.API.Migrations
                 {
                     table.PrimaryKey("PK_Walks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Walks_Diffiulties_DifficultyId",
+                        name: "FK_Walks_Difficulties_DifficultyId",
                         column: x => x.DifficultyId,
                         principalTable: "Difficulties",
                         principalColumn: "Id",
@@ -102,6 +118,9 @@ namespace WZDemo.API.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Images");
+
             migrationBuilder.DropTable(
                 name: "Walks");
 
