@@ -11,10 +11,21 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
+using Serilog;
+using WZDemo.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+var logger = new LoggerConfiguration()
+	.WriteTo.Console() // 將日誌輸出到控制台
+	.WriteTo.File("Logs/WZDemo_log.txt",rollingInterval:RollingInterval.Day)// 將日誌輸出到文件
+	.MinimumLevel.Information() // 設置最低日誌級別為 Information
+	.CreateLogger(); // 創建日誌對象
+
+builder.Logging.ClearProviders(); // 清除默認的日誌提供程序
+builder.Logging.AddSerilog(logger); // 添加 Serilog 日誌提供程序
 
 builder.Services.AddControllers();
 // 用於訪問當前的 HttpContext。HttpContext 包含有關當前 HTTP 請求的所有信息，例如請求頭、請求路徑、用戶信息等。
@@ -114,6 +125,9 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+// middleware
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 

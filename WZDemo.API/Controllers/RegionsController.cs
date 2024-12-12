@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Text.Json;
 using WZDemo.API.CustomActionFilter;
 using WZDemo.API.Data;
+using WZDemo.API.Exceptions;
 using WZDemo.API.Models;
 using WZDemo.API.Models.Domain;
 using WZDemo.API.Models.DTOs;
@@ -20,20 +23,23 @@ namespace WZDemo.API.Controllers
 		private readonly WZDemoDBContext dbContext;
 		private readonly IRegionRepository regionRepository;
 		private readonly IMapper mapper;
+		private readonly ILogger<RegionsController> logger;
 
 		public RegionsController(
 			WZDemoDBContext dbContext,
 			IRegionRepository regionRepository,
-			IMapper mapper)
+			IMapper mapper,
+			ILogger<RegionsController> logger)
 		{
 			this.dbContext = dbContext;
 			this.regionRepository = regionRepository;
 			this.mapper = mapper;
+			this.logger = logger;
 		}
 
 
 		[HttpGet]
-		[Authorize(Roles ="Reader,Writer")]
+		[Authorize(Roles = "Reader,Writer")]
 		public async Task<IActionResult> GetAllRegion()
 		{
 			// get Data from database
@@ -46,7 +52,7 @@ namespace WZDemo.API.Controllers
 		}
 
 		[HttpGet]
-		[Authorize(Roles = "Reader,Writer")]
+		//[Authorize(Roles = "Reader,Writer")]
 		[Route("{id:Guid}")]
 		public async Task<IActionResult> GetById([FromRoute] Guid id)
 		{
@@ -54,7 +60,7 @@ namespace WZDemo.API.Controllers
 
 			if (regionsDomain == null)
 			{
-				return NotFound();
+				throw new ResourceNotFoundException("沒有該筆資料");
 			}
 
 			// Convert domain to dto	
@@ -90,7 +96,7 @@ namespace WZDemo.API.Controllers
 
 			regionDomainModel = await regionRepository.UpdateAsync(id, regionDomainModel);
 
-			if (regionDomainModel == null) return NotFound();
+			if (regionDomainModel == null) throw new ResourceNotFoundException("沒有該筆資料");
 
 			// Convert domain to dto
 			var regionDto = mapper.Map<RegionDto>(regionDomainModel);
@@ -105,10 +111,7 @@ namespace WZDemo.API.Controllers
 		{
 			var regionDomainModel = await regionRepository.DeleteAsync(id);
 
-			if (regionDomainModel == null)
-			{
-				return NotFound();
-			}
+			if (regionDomainModel == null) throw new ResourceNotFoundException("沒有該筆資料");
 
 			// Map Model To Dto
 			var regionDto = mapper.Map<RegionDto>(regionDomainModel);
