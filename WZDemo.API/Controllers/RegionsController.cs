@@ -39,7 +39,7 @@ namespace WZDemo.API.Controllers
 
 
 		[HttpGet]
-		[Authorize(Roles = "Reader,Writer")]
+		//[Authorize(Roles = "Reader,Writer")]
 		public async Task<IActionResult> GetAllRegion()
 		{
 			// get Data from database
